@@ -33,6 +33,7 @@ public class MainActivity extends Activity
     int readBufferPosition;
     int counter;
     volatile boolean stopWorker;
+    ArrayList<String> mylist;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -46,7 +47,7 @@ public class MainActivity extends Activity
         myLabel = (TextView)findViewById(R.id.label);
         myTextbox = (EditText)findViewById(R.id.entry);
 
-
+        mylist = new ArrayList<String>();
 
         //Open Button
         openButton.setOnClickListener(new View.OnClickListener()
@@ -57,19 +58,6 @@ public class MainActivity extends Activity
                 {
                     findBT();
                     openBT();
-                }
-                catch (IOException ex) { }
-            }
-        });
-
-        //Send Button
-        sendButton.setOnClickListener(new View.OnClickListener()
-        {
-            public void onClick(View v)
-            {
-                try
-                {
-                    sendData();
                 }
                 catch (IOException ex) { }
             }
@@ -165,13 +153,8 @@ public class MainActivity extends Activity
                                     final String data = new String(encodedBytes, "US-ASCII");
                                     readBufferPosition = 0;
 
-                                    handler.post(new Runnable()
-                                    {
-                                        public void run()
-                                        {
-                                            myLabel.setText(data);
-                                        }
-                                    });
+
+                                    mylist.add(data);
                                     mmOutputStream.write(("OK").getBytes());
                                 }
                                 else
@@ -202,6 +185,11 @@ public class MainActivity extends Activity
 
     void closeBT() throws IOException
     {
+        for(int i=0; i<mylist.size();i++){
+            myLabel.append(mylist.get(i));
+        }
+
+
         stopWorker = true;
         mmOutputStream.close();
         mmInputStream.close();
